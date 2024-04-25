@@ -97,28 +97,28 @@ CommandDescription ParseCommandDescription(std::string_view line) {
             std::string(line.substr(colon_pos + 1))};
 }
 
-        void InputReader::ParseLine(std::string_view line) {
-            auto command_description = ParseCommandDescription(line);
-            if (command_description) {
-                commands_.push_back(std::move(command_description));
-            }
-        }
+void InputReader::ParseLine(std::string_view line) {
+    auto command_description = ParseCommandDescription(line);
+    if (command_description) {
+        commands_.push_back(std::move(command_description));
+    }
+}
 
-        void InputReader::ApplyCommands(TransportCatalogue& catalogue) const {
-            for (const auto& command : commands_) {
-                if (command.command == "Stop") {
-                    Coordinates coordinates = ParseCoordinates(command.description);
-                    catalogue.AddStop(command.id, coordinates);
-                } else if (command.command == "Bus") {
-                    std::vector<std::string_view> stops_str = ParseRoute(command.description);
-                    std::deque<std::string> stops(stops_str.begin(), stops_str.end());
-                    bool isCircular = (stops.front() == stops.back());
-                    catalogue.AddRoute(command.id, stops, isCircular);
-                }
-            }
+void InputReader::ApplyCommands(TransportCatalogue& catalogue) const {
+    for (const auto& command : commands_) {
+        if (command.command == "Stop") {
+            Coordinates coordinates = ParseCoordinates(command.description);
+            catalogue.AddStop(command.id, coordinates);
+        } else if (command.command == "Bus") {
+            std::vector<std::string_view> stops_str = ParseRoute(command.description);
+            std::deque<std::string> stops(stops_str.begin(), stops_str.end());
+            bool isCircular = (stops.front() == stops.back());
+            catalogue.AddRoute(command.id, stops, isCircular);
         }
+    }
+}
 
-    } 
+} 
 
 }
 
