@@ -2,13 +2,14 @@
 
 #include <iosfwd>
 #include <string_view>
-
+#include <iomanip>
 #include "transport_catalogue.h"
 
 namespace TransportCatalogue {
 
 namespace detail {
-        void ParseAndPrintStat(const TransportCatalogue& tansport_catalogue, std::string_view request,
-                               std::ostream& output);
+        void ParseAndPrintStat(std::istream& in, TransportCatalogue& catalogue, std::ostream& out);
+        void PrintRoute(std::string& line, TransportCatalogue& catalogue, std::ostream& out);
+        void PrintStop(std::string& line, TransportCatalogue& catalogue, std::ostream& out);
 } 
 }
