@@ -1,7 +1,7 @@
 #pragma once
 #include "transport_catalogue.h"
 
-namespace TransportCatalogue {
+namespace Catalogue {
 
 namespace detail {
 
@@ -21,7 +21,13 @@ namespace detail {
         };
         class InputReader {
         public:
+            /**
+             * Парсит строку в структуру CommandDescription и сохраняет результат в commands_
+             */
             void ParseLine(std::string_view line);
+            /**
+             * Наполняет данными транспортный справочник, используя команды из commands_
+             */
             void ApplyCommands(TransportCatalogue& catalogue) const;
             static void ReadInput(std::istream& input_stream, TransportCatalogue& catalogue);
         private:
