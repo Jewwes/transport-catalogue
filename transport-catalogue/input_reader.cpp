@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iostream>
 using namespace std::literals;
-namespace TransportCatalogue {
+namespace Catalogue {
     namespace detail {
 
         /**
@@ -54,9 +54,6 @@ namespace TransportCatalogue {
                 }
                 pos = delim_pos + 1;
             }
-            //   for (const auto x : result) {
-             //      std::cout << x << std::endl;
-             //  }
             return result;
         }
 
@@ -99,12 +96,11 @@ namespace TransportCatalogue {
         }
 
 
-        std::pair<Coordinates, std::vector<std::pair<std::string, int>>> ParseStopDescription(std::string_view description) {
-            std::pair<Coordinates, std::vector<std::pair<std::string, int>>> result;
-
+        static ParseStop ParseStopDescription(std::string_view description) {
+            ParseStop result;
             auto parts = Split(description, ',');
             if (parts.size() >= 2) {
-                result.first = ParseCoordinates(std::string(parts[0]) + ", "s + std::string(parts[1]));
+                result.coordinates = ParseCoordinates(std::string(parts[0]) + ", "s + std::string(parts[1]));
             }
 
             for (size_t i = 2; i < parts.size(); ++i) {
@@ -113,10 +109,11 @@ namespace TransportCatalogue {
                 if (m_to_pos != distance_str.npos) {
                     std::string stop_name = std::string(distance_str.substr(m_to_pos + 5));
                     int distance = std::stoi(std::string(distance_str.substr(0, m_to_pos)));
-                    result.second.push_back({ stop_name, distance });
+                    result.name_distance.push_back({ stop_name, distance });
+                    //Добавил структуру ParseStop, чтобы в дальнейшем было понятно, что это за neighbor.first и neighbor.second
+                    //Были мысли на счет того, чтобы сделать структуру в структуре, дабы за
                 }
             }
-
             return result;
         }
 
@@ -132,14 +129,14 @@ namespace TransportCatalogue {
         void InputReader::ApplyCommands(TransportCatalogue& catalogue) const {
             for (const auto& command : commands_) {
                 if (command.command == "Stop") {
-                    std::pair<Coordinates, std::vector<std::pair<std::string, int>>> stop_info = ParseStopDescription(command.description);
-                    catalogue.AddStop(command.id, stop_info.first);
+                    ParseStop stop_info = ParseStopDescription(command.description);
+                    catalogue.AddStop(command.id, stop_info.coordinates);
                 }
             }
             for (const auto& command : commands_){
                 if (command.command == "Stop") {
-                    std::pair<Coordinates, std::vector<std::pair<std::string, int>>> stop_info = ParseStopDescription(command.description);
-                    for (const auto& neighbor : stop_info.second) {
+                    ParseStop stop_info = ParseStopDescription(command.description);
+                    for (const auto& neighbor : stop_info.name_distance) {
                         catalogue.AddDistance(command.id, neighbor.first, neighbor.second);
                     }
                 }
