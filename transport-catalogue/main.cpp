@@ -8,7 +8,7 @@
 using namespace std;
 
 int main() {
-    TransportCatalogue::TransportCatalogue catalogue;
-    TransportCatalogue::detail::InputReader::ReadInput(cin, catalogue);
-    TransportCatalogue::detail::ParseAndPrintStat(cin,catalogue, cout);
+    Catalogue::TransportCatalogue catalogue;
+    Catalogue::detail::InputReader::ReadInput(cin, catalogue);
+    Catalogue::detail::ParseAndPrintStat(cin,catalogue, cout);
 }
