@@ -1,17 +1,18 @@
 #include "transport_catalogue.h"
 #include <ostream>
 #include <iomanip>
-namespace TransportCatalogue {
+namespace Catalogue {
 
     namespace detail {
 
         void PrintRoute(std::string& line, TransportCatalogue& catalogue, std::ostream& out) {
             std::string bus = line.substr(1, line.npos);
             if (catalogue.FindRoute(bus)) {
+                auto route = catalogue.GetRouteInfo(bus);
                 out << "Bus " << bus << ": " << catalogue.GetRouteInfo(bus)->stops_count << " stops on route, "
-                    << catalogue.GetRouteInfo(bus)->unique_stops_count << " unique stops, " << std::setprecision(6)
-                    << catalogue.GetRouteInfo(bus)->route_length << " route length, "
-                    << catalogue.GetRouteInfo(bus)->curvature << " curvature\n";
+                    << route->unique_stops_count << " unique stops, " << std::setprecision(6)
+                    << route->route_length << " route length, "
+                    << route->curvature << " curvature\n";
             }
             else {
                 out << "Bus " << bus << ": not found\n";
@@ -21,12 +22,12 @@ namespace TransportCatalogue {
         void PrintStop(std::string& line, TransportCatalogue& catalogue, std::ostream& out) {
             std::string stop = line.substr(1, line.npos);
             if (catalogue.FindStop(stop)) {
-                out << "Stop " << stop << ":";
                 auto stopInfo = catalogue.GetStopInfo(stop)->buses;
                 if (!stopInfo.empty()) {
+                    // Accessing stopInfo->buses safely
                     out << " buses ";
-                    for (const auto& sto : stopInfo) {
-                        out << sto << " ";
+                    for (const auto& busName : stopInfo) {
+                        out << busName << " ";
                     }
                     out << "\n";
                 }
