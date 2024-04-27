@@ -5,7 +5,7 @@
 #include <iomanip>
 #include "transport_catalogue.h"
 
-namespace TransportCatalogue {
+namespace Catalogue {
 
 namespace detail {
         void ParseAndPrintStat(std::istream& in, TransportCatalogue& catalogue, std::ostream& out);
