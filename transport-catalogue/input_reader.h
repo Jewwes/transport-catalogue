@@ -30,6 +30,12 @@ namespace detail {
              */
             void ApplyCommands(TransportCatalogue& catalogue) const;
             static void ReadInput(std::istream& input_stream, TransportCatalogue& catalogue);
+            
+            struct ParseStop {
+                Coordinates coordinates;
+                std::unordered_map<std::string, double> name_distance;
+            };
+
         private:
             std::vector<CommandDescription> commands_;
         };
