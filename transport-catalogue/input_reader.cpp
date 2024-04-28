@@ -96,8 +96,8 @@ namespace Catalogue {
         }
 
 
-        static ParseStop ParseStopDescription(std::string_view description) {
-            ParseStop result;
+        static InputReader::ParseStop ParseStopDescription(std::string_view description) {
+            InputReader::ParseStop result;
             auto parts = Split(description, ',');
             if (parts.size() >= 2) {
                 result.coordinates = ParseCoordinates(std::string(parts[0]) + ", "s + std::string(parts[1]));
@@ -109,7 +109,7 @@ namespace Catalogue {
                 if (m_to_pos != distance_str.npos) {
                     std::string stop_name = std::string(distance_str.substr(m_to_pos + 5));
                     int distance = std::stoi(std::string(distance_str.substr(0, m_to_pos)));
-                    result.name_distance.push_back({ stop_name, distance });
+                    result.name_distance.insert({ stop_name, distance });
                     //Добавил структуру ParseStop, чтобы в дальнейшем было понятно, что это за neighbor.first и neighbor.second
                     //Были мысли на счет того, чтобы сделать структуру в структуре, дабы за
                 }
