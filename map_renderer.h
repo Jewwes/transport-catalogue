@@ -103,14 +103,13 @@ namespace map_renderer {
             : render_settings_(render_settings)
         {}
 
-        void Lines(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const;
-        void Routes(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const;
-        void Circles(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const;
-        void Stops(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const;
-
         svg::Document GetSVG(const std::map<std::string_view, const transport::Bus*>& buses) const;
 
     private:
+        void DrawLines(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const;
+        void DrawRoutes(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const;
+        void DrawCircles(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const;
+        void DrawStops(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const;
         const RenderSettings render_settings_;
     };
 
