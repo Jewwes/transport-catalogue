@@ -30,6 +30,7 @@ namespace transport {
         void AddDistance(const Stop* from, const Stop* to, const int distance);
         int GetDistance(const Stop* from, const Stop* to) const;
         const std::map<std::string_view, const Bus*> AllBuses() const;
+        std::optional<transport::BusStat> GetBusStat(const std::string_view& bus_number) const;
     private:
         std::unordered_map<std::string_view, const Stop*> stops_name_;
         std::unordered_map<std::string_view, const Bus*> buses_name_;
