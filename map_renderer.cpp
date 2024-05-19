@@ -6,7 +6,7 @@ namespace map_renderer {
         return std::abs(value) < EPSILON;
     }
 
-    void MapRenderer::Lines(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const {
+    void MapRenderer::DrawLines(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const {
         size_t color_num = 0;
         size_t color_index = render_settings_.color_palette.size();
         for (const auto& [bus_number, bus] : buses) {
@@ -37,7 +37,7 @@ namespace map_renderer {
         }
     }
 
-    void MapRenderer::Routes(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const {
+    void MapRenderer::DrawRoutes(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const {
         size_t color_num = 0;
         size_t color_index = render_settings_.color_palette.size();
         svg::Text text;
@@ -71,7 +71,7 @@ namespace map_renderer {
                 result.Add(sub_text);
                 result.Add(text);
 
-                if (bus->is_circle == false && bus->stops[0] != bus->stops[bus->stops.size() - 1]) {
+                if (bus->is_circle == false) {
                     svg::Text text_round{ text };
                     svg::Text sub_text_round{ sub_text };
                     result.Add(sub_text_round.SetPosition(sp(bus->stops.at(bus->stops.size() - 1)->coordinates)));
@@ -81,7 +81,7 @@ namespace map_renderer {
         }
     }
 
-    void MapRenderer::Circles(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const {
+    void MapRenderer::DrawCircles(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const {
         svg::Circle circle;
         for (const auto& [name, stop] : stops) {
             circle.SetCenter(sp(stop->coordinates)).
@@ -91,7 +91,7 @@ namespace map_renderer {
         }
     }
 
-    void MapRenderer::Stops(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const {
+    void MapRenderer::DrawStops(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const {
         svg::Text text;
         svg::Text sub_text;
         for (const auto& [name, stop] : stops) {
@@ -133,10 +133,10 @@ namespace map_renderer {
         }
         SphereProjector sp(route_stops_coord.begin(), route_stops_coord.end(), render_settings_.width, render_settings_.height, render_settings_.padding);
 
-        Lines(buses, result, sp);
-        Routes(buses, result, sp);
-        Circles(stops, result, sp);
-        Stops(stops, result, sp);
+        DrawLines(buses, result, sp);
+        DrawRoutes(buses, result, sp);
+        DrawCircles(stops, result, sp);
+        DrawStops(stops, result, sp);
         return result;
     }
 
