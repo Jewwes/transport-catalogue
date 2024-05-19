@@ -1,41 +1,52 @@
 #include "request_handler.h"
 
-std::optional<transport::BusStat> RequestHandler::GetBusStat(const std::string_view& bus_number) const {
-    transport::BusStat bus_stat{};
-    std::unordered_set<const transport::Stop*> unique_stops;
-    for (const auto* stop : catalogue_.FindRoute(bus_number)->stops) {
-        unique_stops.insert(stop);
-    }
-    size_t num_unique_stops = unique_stops.size();
-    const transport::Bus* bus = catalogue_.FindRoute(bus_number);
-    if (bus->is_circle) bus_stat.stops_count = bus->stops.size();
-    else bus_stat.stops_count = bus->stops.size() * 2 - 1;
-
-    int route_length = 0;
-    double geographic_length = 0.0;
-
-    for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
-        auto from = bus->stops[i];
-        auto to = bus->stops[i + 1];
-        if (bus->is_circle) {
-            route_length += catalogue_.GetDistance(from, to);
-            geographic_length += geo::ComputeDistance(from->coordinates, to->coordinates);
+void RequestHandler::ProcessRequests(const json::Node& requests) const {
+    json::Array result;
+    const json::Array& arr = requests.AsArray();
+    for (auto& request : arr) {
+        const auto& request_map = request.AsMap();
+        const auto& type = request_map.at("type").AsString();
+        if (type == "Stop") {
+            result.emplace_back(PrintStop(request_map).AsMap());
         }
-        else {
-            route_length += catalogue_.GetDistance(from, to) + catalogue_.GetDistance(to, from);
-            geographic_length += geo::ComputeDistance(from->coordinates, to->coordinates) * 2;
+        if (type == "Bus") {
+            result.emplace_back(PrintRoute(request_map).AsMap());
         }
     }
-
-    bus_stat.unique_stops_count = num_unique_stops;
-    bus_stat.route_length = route_length;
-    bus_stat.curvature = route_length / geographic_length;
-
-    return bus_stat;
+    json::Print(json::Document{ result }, std::cout);
 }
 
-const transport::TransportCatalogue& RequestHandler::GetCatalogue() const{
-    return catalogue_;
+const json::Node RequestHandler::PrintRoute(const json::Dict& request) const {
+    json::Dict result;
+    result["request_id"] = request.at("id").AsInt();
+    if (!catalogue_.FindRoute(request.at("name").AsString())) {
+        result["error_message"] = json::Node{ static_cast<std::string>("not found") };
+    }
+    else {
+        result["curvature"] = catalogue_.GetBusStat(request.at("name").AsString())->curvature;
+        result["route_length"] = catalogue_.GetBusStat(request.at("name").AsString())->route_length;
+        result["stop_count"] = static_cast<int>(catalogue_.GetBusStat(request.at("name").AsString())->stops_count);
+        result["unique_stop_count"] = static_cast<int>(catalogue_.GetBusStat(request.at("name").AsString())->unique_stops_count);
+    }
+    return json::Node{ result };
+}
+
+const json::Node RequestHandler::PrintStop(const json::Dict& request) const {
+    json::Dict result;
+    const std::string& stop_name = request.at("name").AsString();
+    result["request_id"] = request.at("id").AsInt();
+    if (!catalogue_.FindStop(stop_name)) {
+        result["error_message"] = json::Node{ static_cast<std::string>("not found") };
+    }
+    else {
+        json::Array buses;
+        for (auto& bus : catalogue_.FindStop(stop_name)->buses_by_stop) {
+            buses.push_back(bus);
+        }
+        result["buses"] = buses;
+    }
+
+    return json::Node{ result };
 }
 
 svg::Document RequestHandler::RenderMap() const {
