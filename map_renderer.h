@@ -103,13 +103,14 @@ namespace map_renderer {
             : render_settings_(render_settings)
         {}
 
-        svg::Document GetSVG(const std::map<std::string_view, const transport::Bus*>& buses) const;
-
-    private:
         void DrawLines(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const;
         void DrawRoutes(const std::map<std::string_view, const transport::Bus*>& buses, svg::Document& result, const SphereProjector& sp) const;
         void DrawCircles(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const;
         void DrawStops(const std::map<std::string_view, const transport::Stop*>& stops, svg::Document& result, const SphereProjector& sp) const;
+
+        svg::Document GetSVG(const std::map<std::string_view, const transport::Bus*>& buses) const;
+
+    private:
         const RenderSettings render_settings_;
     };
 
