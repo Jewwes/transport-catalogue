@@ -71,7 +71,7 @@ namespace map_renderer {
                 result.Add(sub_text);
                 result.Add(text);
 
-                if (bus->is_circle == false) {
+                if (bus->is_circle == false && bus->stops[0] != bus->stops[bus->stops.size() - 1]) {
                     svg::Text text_round{ text };
                     svg::Text sub_text_round{ sub_text };
                     result.Add(sub_text_round.SetPosition(sp(bus->stops.at(bus->stops.size() - 1)->coordinates)));
